@@ -8,7 +8,6 @@ import { store } from '../store';
 import { useAppSelector } from '../store';
 import AuthProvider from './Providers/AuthProvider';
 import { ToastContainer } from 'react-toastify';
-import { Box, Skeleton } from '@mui/material';
 
 const lightTheme = createTheme({
   palette: {
@@ -41,7 +40,7 @@ const darkTheme = createTheme({
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { mode } = useAppSelector((state) => state.theme);
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -57,25 +56,6 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
   }, [mode, mounted]);
 
   const theme = mode === 'dark' ? darkTheme : lightTheme;
-
-  if (!mounted) {
-    return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Box sx={{ 
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          bgcolor: 'background.default'
-        }}>
-          <Box sx={{ p: 2 }}>
-            <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
-            <Skeleton variant="rectangular" height={400} />
-          </Box>
-        </Box>
-      </ThemeProvider>
-    );
-  }
 
   return (
     <ThemeProvider theme={theme}>

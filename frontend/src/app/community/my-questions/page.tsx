@@ -12,6 +12,7 @@ import { Card, CardContent } from '../../../components/ui/card';
 import { Skeleton } from '../../../components/ui/skeleton';
 import { PlusCircle, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import QuestionCompose from "../../../components/QA/QuestionCompose";
 
 export default function MyQuestionsPage() {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -21,6 +22,7 @@ export default function MyQuestionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
 
   const fetchMyQuestions = async (page: number = 1) => {
     if (!user?.id) return;
@@ -96,11 +98,9 @@ export default function MyQuestionsPage() {
               Quản lý và theo dõi các câu hỏi bạn đã đặt trong cộng đồng
             </p>
           </div>
-          <Button >
-            <Link href="/community?action=ask" className='flex justify-center items-center'>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Đặt câu hỏi mới
-            </Link>
+          <Button onClick={()=> setIsComposeOpen(true)}>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Đặt câu hỏi mới
           </Button>
         </div>
 
@@ -147,11 +147,9 @@ export default function MyQuestionsPage() {
                   }
                 </p>
                 {!searchTerm && (
-                  <Button >
-                    <Link href="/community?action=ask">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Đặt câu hỏi đầu tiên
-                    </Link>
+                  <Button onClick={()=> setIsComposeOpen(true)}>
+                    <PlusCircle className="h-4 w-4 mr-2 inline-block" />
+                    <span>Đặt câu hỏi đầu tiên</span>
                   </Button>
                 )}
               </CardContent>
@@ -194,6 +192,14 @@ export default function MyQuestionsPage() {
               )}
             </>
           )}
+            <QuestionCompose
+                isOpen={isComposeOpen}
+                onClose={() => setIsComposeOpen(false)}
+                onSuccess={() => {
+                    setIsComposeOpen(false);
+                    window.location.reload();
+                }}
+            />
         </div>
 
         {questions.length > 0 && (

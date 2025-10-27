@@ -99,10 +99,6 @@ export class AuthController {
       maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
     });
 
-    console.log('✅ Cookies set for user:', result.user.email);
-    console.log('   NODE_ENV:', process.env.NODE_ENV);
-    console.log('   Secure flag:', cookieOptions.secure);
-
     // Only return user info (tokens are in httpOnly cookies)
     return {
       user: result.user,

@@ -67,12 +67,12 @@ const Footer: React.FC = () => {
                   hoanyttv@gmail.com
                 </span>
               </div>
-              <div className="flex items-center gap-2.5">
-                <Phone className="text-gray-400 w-4 h-4" />
-                <span className="text-gray-300 text-sm">
-                  +84 123 456 789
-                </span>
-              </div>
+              {/*<div className="flex items-center gap-2.5">*/}
+              {/*  <Phone className="text-gray-400 w-4 h-4" />*/}
+              {/*  <span className="text-gray-300 text-sm">*/}
+              {/*    +84842500199*/}
+              {/*  </span>*/}
+              {/*</div>*/}
               <div className="flex items-center gap-2.5">
                 <MapPin className="text-gray-400 w-4 h-4" />
                 <span className="text-gray-300 text-sm">

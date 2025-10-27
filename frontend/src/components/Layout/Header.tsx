@@ -76,6 +76,7 @@ const Header: React.FC = () => {
     { label: 'Trang chủ', href: '/', active: pathname === '/' },
     { label: 'Bài viết', href: '/posts', active: pathname.startsWith('/posts') },
     { label: 'Cộng đồng', href: '/community', active: pathname === '/community' },
+    { label: 'Tin tức', href: '/news', active: pathname === '/news' },
   ];
 
   return (
