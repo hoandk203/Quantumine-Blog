@@ -247,6 +247,57 @@ export class AuthController {
   }
 
   // Google OAuth Routes
+  @Post('google/code')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login with Google authorization code' })
+  @ApiResponse({
+    status: 200,
+    description: 'Google login successful',
+    schema: {
+      properties: {
+        user: { type: 'object' },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Google authentication failed' })
+  async googleCode(
+    @Body('code') code: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const ipAddress = req.ip || req.connection.remoteAddress || '0.0.0.0';
+    const userAgent = req.get('User-Agent') || '';
+
+    const result = await this.authService.verifyGoogleCode(
+      code,
+      ipAddress,
+      userAgent,
+    );
+
+    // Set cookies for tokens with httpOnly for security
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+    };
+
+    res.cookie('accessToken', result.accessToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+    });
+
+    res.cookie('refreshToken', result.refreshToken, {
+      ...cookieOptions,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    // Only return user info (tokens are in httpOnly cookies)
+    return {
+      user: result.user,
+    };
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Initiate Google OAuth login' })

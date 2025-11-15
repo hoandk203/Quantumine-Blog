@@ -17,6 +17,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '../../lib/utils';
 import { toast } from 'react-toastify';
+import GoogleLogo from '../SVG/GoogleLogo';
+import SocialLoginButtons from './SocialLoginButtons';
 
 const loginSchema = z.object({
   email: z.string()
@@ -197,34 +199,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo = '/' }) =>
           </div>
 
           {/* Social Login */}
-          {/* <div className="relative">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Hoặc đăng nhập với
+                Hoặc
               </span>
             </div>
           </div>
 
-          <div className="flex space-x-3">
-            <Button
-              variant="outline"
-              className="w-full"
-              type="button"
-            >
-              Google
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              type="button"
-            >
-              Facebook
-            </Button>
-          </div> */}
         </form>
+        <div className='mt-4'>
+          <SocialLoginButtons/>
+        </div>
       </CardContent>
     </Card>
   );

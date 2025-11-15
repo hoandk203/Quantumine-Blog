@@ -19,6 +19,7 @@ import { EmailService } from '../../shared/services/email.service';
 import { ActivityLogService } from '../../shared/services/activity-log.service';
 import { ActivityType } from '../../entities/activity-log.entity';
 import { RedisService } from '../../shared/services/redis.service';
+import { ImageService } from '../../shared/services/image.service';
 
 export interface AuthResponse {
   user: Partial<User>;
@@ -45,6 +46,7 @@ export class AuthService {
     private emailService: EmailService,
     private activityLogService: ActivityLogService,
     private redisService: RedisService,
+    private imageService: ImageService,
   ) {}
 
   async register(
@@ -238,15 +240,30 @@ export class AuthService {
     });
 
     if (!user) {
+      // Upload avatar from Google to Cloudinary for new users
+      let avatarUrl: string | undefined;
+      if (profile.picture) {
+        try {
+          avatarUrl = await this.imageService.uploadFromUrl(
+            profile.picture,
+            'avatars',
+          );
+        } catch (error) {
+          console.error('Failed to upload avatar from Google:', error);
+          // Continue without avatar if upload fails
+        }
+      }
+
       // Create new user
       user = this.userRepository.create({
         email: profile.email,
         name: profile.name,
-        avatar: profile.picture,
+        avatar: avatarUrl,
         provider: AuthProvider.GOOGLE,
         providerId: profile.id,
         emailVerified: true,
         role: UserRole.USER,
+        active: true,
       });
       await this.userRepository.save(user);
 
@@ -261,8 +278,26 @@ export class AuthService {
         resourceId: user.id,
       });
     } else {
-      // Update last login
-      await this.userRepository.update(user.id, { lastLogin: new Date() });
+      // Update last login and avatar only if user doesn't have one
+      const updates: Partial<User> = {
+        lastLogin: new Date(),
+      };
+
+      // Only update avatar if user doesn't have one and Google provides one
+      if (!user.avatar && profile.picture) {
+        try {
+          const avatarUrl = await this.imageService.uploadFromUrl(
+            profile.picture,
+            'avatars',
+          );
+          updates.avatar = avatarUrl;
+        } catch (error) {
+          console.error('Failed to upload avatar from Google:', error);
+        }
+      }
+
+      await this.userRepository.update(user.id, updates);
+      user = { ...user, ...updates };
     }
 
     // Generate tokens
@@ -509,6 +544,163 @@ export class AuthService {
       ...sanitized
     } = user;
     return sanitized;
+  }
+
+  async verifyGoogleCode(
+    code: string,
+    ipAddress: string,
+    userAgent: string,
+  ): Promise<AuthResponse> {
+    try {
+      // Exchange authorization code for access token
+      const tokenResponse = await fetch(
+        'https://oauth2.googleapis.com/token',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            code,
+            client_id: process.env.GOOGLE_CLIENT_ID || '',
+            client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+            redirect_uri: 'postmessage',
+            grant_type: 'authorization_code',
+          }),
+        },
+      );
+
+      const tokenData = await tokenResponse.json();
+      if (!tokenResponse.ok) {
+        console.error('Token exchange failed:', tokenData);
+        throw new UnauthorizedException('Failed to exchange code for token');
+      }
+
+      // Get user info from Google
+      const userResponse = await fetch(
+        'https://www.googleapis.com/oauth2/v2/userinfo',
+        {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`,
+          },
+        },
+      );
+
+      const userData = await userResponse.json();
+      if (!userResponse.ok) {
+        console.error('Failed to get user info:', userData);
+        throw new UnauthorizedException('Failed to get user info');
+      }
+
+      // Find or create user
+      let user = await this.userRepository.findOne({
+        where: [
+          { email: userData.email },
+          { providerId: userData.id, provider: AuthProvider.GOOGLE },
+        ],
+      });
+
+      // Upload avatar to Cloudinary if user is new and has picture
+      let avatarUrl: string | undefined;
+      if (!user && userData.picture) {
+        try {
+          avatarUrl = await this.imageService.uploadFromUrl(
+            userData.picture,
+            'avatars',
+          );
+        } catch (error) {
+          console.error('Failed to upload avatar from Google:', error);
+          // Continue without avatar if upload fails
+        }
+      }
+
+      if (!user) {
+        // Create new user
+        user = this.userRepository.create({
+          email: userData.email,
+          name: userData.name,
+          avatar: avatarUrl,
+          provider: AuthProvider.GOOGLE,
+          providerId: userData.id,
+          emailVerified: true,
+          role: UserRole.USER,
+          active: true,
+        });
+        await this.userRepository.save(user);
+
+        // Log activity
+        await this.activityLogService.log({
+          userId: user.id,
+          type: ActivityType.PROFILE_UPDATE,
+          description: 'User registered via Google',
+          ipAddress,
+          userAgent,
+          resourceType: 'user',
+          resourceId: user.id,
+        });
+      } else {
+        // Update existing user
+        const updates: Partial<User> = {
+          lastLogin: new Date(),
+        };
+
+        // Update provider if user was registered with local auth
+        if (user.provider === AuthProvider.LOCAL) {
+          updates.provider = AuthProvider.GOOGLE;
+          updates.providerId = userData.id;
+          updates.emailVerified = true;
+        }
+
+        // Update avatar if user doesn't have one and Google provides one
+        if (!user.avatar && userData.picture) {
+          try {
+            avatarUrl = await this.imageService.uploadFromUrl(
+              userData.picture,
+              'avatars',
+            );
+            updates.avatar = avatarUrl;
+          } catch (error) {
+            console.error('Failed to upload avatar from Google:', error);
+          }
+        }
+
+        await this.userRepository.update(user.id, updates);
+        user = { ...user, ...updates };
+      }
+
+      // Generate tokens
+      const tokens = await this.generateTokens(user, false);
+
+      // Create session
+      await this.createSession(
+        user.id,
+        tokens.accessToken,
+        tokens.refreshToken,
+        ipAddress,
+        userAgent,
+        false,
+      );
+
+      // Log activity
+      await this.activityLogService.log({
+        userId: user.id,
+        type: ActivityType.LOGIN,
+        description: 'User logged in via Google',
+        ipAddress,
+        userAgent,
+      });
+
+      return {
+        user: this.sanitizeUser(user),
+        ...tokens,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error('Google authentication error:', error);
+      throw new UnauthorizedException('Google authentication failed');
+    }
   }
 
   async validateUser(payload: any): Promise<User> {

@@ -67,4 +67,34 @@ export class ImageService {
       throw new BadRequestException('Failed to upload image: ' + error.message);
     }
   }
+
+  async uploadFromUrl(imageUrl: string, folder: string): Promise<string> {
+    try {
+      if (!imageUrl || imageUrl.trim() === '') {
+        throw new BadRequestException('Image URL is required');
+      }
+
+      // Upload từ URL lên Cloudinary
+      const result = await cloudinary.uploader.upload(imageUrl, {
+        folder: `blog/${folder}`,
+        resource_type: 'auto',
+        quality: 'auto',
+        fetch_format: 'auto',
+        width: 1000,
+        crop: 'limit',
+        flags: 'lossy',
+        transformation: [{ quality: 'auto:good' }],
+      });
+
+      return result.secure_url;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error('Error uploading from URL to Cloudinary:', error);
+      throw new BadRequestException(
+        'Failed to upload image from URL: ' + error.message,
+      );
+    }
+  }
 }

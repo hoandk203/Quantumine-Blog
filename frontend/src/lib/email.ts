@@ -58,11 +58,11 @@ export const sendVerificationEmail = async (
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎉 Chào mừng bạn đến với AdvancedBlog!</h1>
+          <h1>🎉 Chào mừng bạn đến với QuantBlog!</h1>
         </div>
         <div class="content">
           <h2>Xin chào ${name}!</h2>
-          <p>Cảm ơn bạn đã đăng ký tài khoản tại AdvancedBlog. Để hoàn tất quá trình đăng ký, vui lòng xác thực địa chỉ email của bạn.</p>
+          <p>Cảm ơn bạn đã đăng ký tài khoản tại QuantBlog. Để hoàn tất quá trình đăng ký, vui lòng xác thực địa chỉ email của bạn.</p>
           
           <div style="text-align: center;">
             <a href="${verificationUrl}" class="button">Xác thực Email</a>
@@ -76,7 +76,7 @@ export const sendVerificationEmail = async (
           <p>Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
         </div>
         <div class="footer">
-          <p>© 2024 AdvancedBlog. Tất cả quyền được bảo lưu.</p>
+          <p>© 2024 QuantBlog. Tất cả quyền được bảo lưu.</p>
           <p>Email này được gửi tự động, vui lòng không reply.</p>
         </div>
       </div>
@@ -86,7 +86,7 @@ export const sendVerificationEmail = async (
 
   await sendEmail({
     to: email,
-    subject: 'Xác thực email cho tài khoản AdvancedBlog',
+    subject: 'Xác thực email cho tài khoản QuantBlog',
     html,
     text: `Xin chào ${name}! Vui lòng truy cập link sau để xác thực email: ${verificationUrl}`,
   });
@@ -123,7 +123,7 @@ export const sendPasswordResetEmail = async (
         </div>
         <div class="content">
           <h2>Xin chào ${name}!</h2>
-          <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại AdvancedBlog.</p>
+          <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại QuantBlog.</p>
           
           <div style="text-align: center;">
             <a href="${resetUrl}" class="button">Đặt lại mật khẩu</a>
@@ -144,7 +144,7 @@ export const sendPasswordResetEmail = async (
           <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này. Tài khoản của bạn vẫn an toàn.</p>
         </div>
         <div class="footer">
-          <p>© 2024 AdvancedBlog. Tất cả quyền được bảo lưu.</p>
+          <p>© 2024 QuantBlog. Tất cả quyền được bảo lưu.</p>
           <p>Email này được gửi tự động, vui lòng không reply.</p>
         </div>
       </div>
@@ -154,7 +154,7 @@ export const sendPasswordResetEmail = async (
 
   await sendEmail({
     to: email,
-    subject: 'Đặt lại mật khẩu cho tài khoản AdvancedBlog',
+    subject: 'Đặt lại mật khẩu cho tài khoản QuantBlog',
     html,
     text: `Xin chào ${name}! Vui lòng truy cập link sau để đặt lại mật khẩu: ${resetUrl}`,
   });
@@ -170,7 +170,7 @@ export const sendWelcomeEmail = async (
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Chào mừng đến với AdvancedBlog</title>
+      <title>Chào mừng đến với QuantBlog</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -184,13 +184,13 @@ export const sendWelcomeEmail = async (
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎉 Chào mừng đến với AdvancedBlog!</h1>
+          <h1>🎉 Chào mừng đến với QuantBlog!</h1>
         </div>
         <div class="content">
           <h2>Xin chào ${name}!</h2>
-          <p>Tài khoản của bạn đã được xác thực thành công! Chào mừng bạn đến với cộng đồng AdvancedBlog.</p>
+          <p>Tài khoản của bạn đã được xác thực thành công! Chào mừng bạn đến với cộng đồng QuantBlog.</p>
           
-          <h3>🚀 Bạn có thể làm gì với AdvancedBlog?</h3>
+          <h3>🚀 Bạn có thể làm gì với QuantBlog?</h3>
           
           <div class="feature">
             <h4>📝 Viết và chia sẻ bài viết</h4>
@@ -214,7 +214,7 @@ export const sendWelcomeEmail = async (
           <p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi!</p>
         </div>
         <div class="footer">
-          <p>© 2024 AdvancedBlog. Tất cả quyền được bảo lưu.</p>
+          <p>© 2024 QuantBlog. Tất cả quyền được bảo lưu.</p>
           <p>Theo dõi chúng tôi trên mạng xã hội để cập nhật tin tức mới nhất!</p>
         </div>
       </div>
@@ -224,8 +224,8 @@ export const sendWelcomeEmail = async (
 
   await sendEmail({
     to: email,
-    subject: 'Chào mừng đến với AdvancedBlog! 🎉',
+    subject: 'Chào mừng đến với QuantBlog! 🎉',
     html,
-    text: `Xin chào ${name}! Chào mừng bạn đến với AdvancedBlog. Hãy bắt đầu khám phá tại ${process.env.SITE_URL}`,
+    text: `Xin chào ${name}! Chào mừng bạn đến với QuantBlog. Hãy bắt đầu khám phá tại ${process.env.SITE_URL}`,
   });
 }; 

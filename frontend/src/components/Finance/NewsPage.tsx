@@ -1,15 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '../../components/Layout/MainLayout';
 import TickerTape from '../../components/Finance/TickerTape';
 import MarketOverview from '../../components/Finance/MarketOverview';
 import EconomicCalendar from '../../components/Finance/EconomicCalendar';
-import NewsTimeline from '../../components/Finance/NewsTimeline';
+import NewsArticleList from '../../components/Finance/NewsArticleList';
+import CategorySelector from '../../components/Finance/CategorySelector';
 import QuickStats from '../../components/Finance/QuickStats';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 const NewsPage: React.FC = () => {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -39,22 +42,22 @@ const NewsPage: React.FC = () => {
                 </CardContent>
               </Card>
 
-              {/* News Timeline */}
+              {/* News Articles from NeonTech */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Tin tức hôm nay</span>
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                      Cập nhật theo thời gian thực
-                    </span>
+                    <span>Tin tức mới nhất</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <NewsTimeline
-                    height={1000}
-                    feedMode="market"
-                    market="stock"
+                <CardContent className="p-4 space-y-4">
+                  {/* Category Selector */}
+                  <CategorySelector
+                    selectedCategoryId={selectedCategoryId}
+                    onCategoryChange={setSelectedCategoryId}
                   />
+
+                  {/* Articles List */}
+                  <NewsArticleList limit={20} categoryId={selectedCategoryId} />
                 </CardContent>
               </Card>
             </div>
@@ -90,10 +93,11 @@ const NewsPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                  Về dữ liệu thị trường
+                  Về dữ liệu tin tức
                 </h3>
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  Dữ liệu được cung cấp bởi TradingView và được cập nhật theo thời gian thực.
+                  Tin tức được thu thập tự động từ Google News và được lưu trữ trong NeonTech database.
+                  Dữ liệu thị trường được cung cấp bởi TradingView.
                   Thông tin này chỉ mang tính chất tham khảo và không phải là lời khuyên đầu tư.
                 </p>
               </div>

@@ -62,7 +62,7 @@ export default function CreatePostPage() {
         tags: postData.tags,
         featured_image: selectedImageBase64,
         published: false, // Lưu nháp
-        seoTitle: postData.metaTitle,
+        seoTitle: postData.title,
         seoDescription: postData.metaDescription,
       };
 
@@ -93,6 +93,8 @@ export default function CreatePostPage() {
   };
 
   const handlePublish = async (postData: any) => {
+    console.log(1111111111,postData);
+    
     try {
       setPublishingLoading(true);
       if (!postData.title || !postData.content) {
@@ -113,13 +115,11 @@ export default function CreatePostPage() {
         tags: postData.tags,
         featured_image: selectedImageBase64,
         published: true, // Xuất bản
-        seoTitle: postData.metaTitle,
+        seoTitle: postData.title,
         seoDescription: postData.metaDescription,
       };
 
-      console.log('Publishing post with data:', formattedData);
       const result = await createPost(formattedData);
-      console.log('Post published successfully:', result);
       
       toast.success('Đã xuất bản bài viết thành công!');
 
