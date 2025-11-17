@@ -44,9 +44,14 @@ export default registerAs(
     logging: process.env.NODE_ENV === 'development',
     migrations: ['dist/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations',
+    // SSL configuration: Use DB_SSL env var to control SSL
+    // For local Docker DB: DB_SSL=false
+    // For external DB (like NeonTech): DB_SSL=true or omit
     ssl:
-      process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: false }
-        : false,
+      process.env.DB_SSL === 'false'
+        ? false
+        : process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
   }),
 );
