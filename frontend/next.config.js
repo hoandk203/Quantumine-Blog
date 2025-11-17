@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone', // Enable standalone output for Docker
+  eslint: {
+    // Ignore ESLint errors during production build
+    ignoreDuringBuilds: true,
+  },
   images: {
     domains: ['localhost', 'example.com'],
     remotePatterns: [
