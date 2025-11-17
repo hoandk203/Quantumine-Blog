@@ -6,14 +6,16 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=https://api.quantumine.com.vn
+        - NEXT_PUBLIC_API_URL=https://api.quantumine.com.vn/v1
         - NEXT_PUBLIC_FRONTEND_URL=https://web.quantumine.com.vn
+        - NEXT_PUBLIC_GOOGLE_CLIENT_ID=479256887039-8av4pqfh2unddrpfqp9h6jklvpoeipdn.apps.googleusercontent.com
+        - NEXT_PUBLIC_COOKIE_DOMAIN=.quantumine.com.vn
     container_name: quant-frontend
     restart: unless-stopped
+    env_file:
+      - frontend/.env.production
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://api.quantumine.com.vn
-      - NEXT_PUBLIC_FRONTEND_URL=https://web.quantumine.com.vn
     networks:
       - quant-network
     depends_on:
