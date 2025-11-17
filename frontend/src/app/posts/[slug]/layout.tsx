@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .join(' ');
   
   return {
-    title: `${title} | AdvancedBlog`,
-    description: `Đọc bài viết: ${title} - Khám phá những kiến thức hữu ích tại AdvancedBlog`,
+    title: `${title} | QuantBlog`,
+    description: `Đọc bài viết: ${title} - Khám phá những kiến thức hữu ích tại QuantBlog`,
   };
 }
 

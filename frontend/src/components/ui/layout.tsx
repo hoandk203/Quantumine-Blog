@@ -6,10 +6,10 @@ import MainLayout from '../Layout/MainLayout';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | AdvancedBlog',
+    template: '%s | QuantBlog',
     default: 'Xác thực',
   },
-  description: 'Đăng nhập hoặc đăng ký tài khoản để trải nghiệm đầy đủ tính năng của AdvancedBlog',
+  description: 'Đăng nhập hoặc đăng ký tài khoản để trải nghiệm đầy đủ tính năng của QuantBlog',
 };
 
 export default function AuthLayout({

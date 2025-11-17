@@ -7,6 +7,9 @@ import { Question, QueryQuestionsParams } from '../../types/qa.types';
 import { getQuestions } from '../../services/QAService';
 import QuestionCard from '../../components/QA/QuestionCard';
 import QuestionCompose from '../../components/QA/QuestionCompose';
+import {Button} from "@mui/material";
+import { RootState, useAppSelector } from '../../store';
+import { useRouter } from 'next/navigation';
 
 
 export default function QAPage() {
@@ -18,6 +21,8 @@ export default function QAPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const { user } = useAppSelector((state: RootState) => state.auth);
+  const router = useRouter();
 
 
   const fetchQuestions = async (params: QueryQuestionsParams = {}) => {
@@ -76,14 +81,14 @@ export default function QAPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Global Question Compose Modal */}
       <QuestionCompose
-          isOpen={isComposeOpen}
-          onClose={() => setIsComposeOpen(false)}
-          onSuccess={() => {
-            setIsComposeOpen(false);
-            // Refresh page data could be handled here
-            window.location.reload();
-          }}
-        />
+        isOpen={isComposeOpen}
+        onClose={() => setIsComposeOpen(false)}
+        onSuccess={() => {
+          setIsComposeOpen(false);
+          // Refresh page data could be handled here
+          window.location.reload();
+        }}
+      />
       <div className="px-6 py-8 pt-0">
         {/* Header */}
         <div className="mb-4">
@@ -94,13 +99,15 @@ export default function QAPage() {
                 Đặt câu hỏi và nhận câu trả lời từ cộng đồng
               </p>
             </div>
-            <button
-              onClick={() => setIsComposeOpen(true)}
-              className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-gray-300 text-white dark:text-gray-900 px-4 py-2 rounded-lg transition-colors duration-200"
-            >
-              <Plus className="w-5 h-5" />
-              Đặt câu hỏi
-            </button>
+            {user &&
+              <button
+                onClick={() => setIsComposeOpen(true)}
+                className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-gray-300 text-white dark:text-gray-900 px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                <Plus className="w-5 h-5" />
+                Đặt câu hỏi
+              </button>
+            }
           </div>
         </div>
 
@@ -161,13 +168,25 @@ export default function QAPage() {
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {searchTerm ? 'Thử tìm kiếm với từ khóa khác' : 'Hãy là người đầu tiên đặt câu hỏi'}
               </p>
-              <Link
-                href="/qa/ask"
+              {user
+              ?
+              <Button
+
+                onClick={() => setIsComposeOpen(true)}
                 className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-200"
               >
                 <Plus className="w-5 h-5" />
                 Đặt câu hỏi đầu tiên
-              </Link>
+              </Button>
+              :
+              <Button
+                onClick={() => router.push('auth/login')}
+                className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-200"
+              >
+                Đăng nhập để đặt câu hỏi
+              </Button>
+              }
+              
             </div>
           ) : (
             questions.map((question) => (

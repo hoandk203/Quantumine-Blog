@@ -304,15 +304,11 @@ export default function PostComment({ postId }: PostCommentProps) {
                     type="file"
                     onChange={handleImageSelect}
                   />
-                  <label htmlFor="image-upload">
-                    <Button
-                      variant="ghost"
-                      className="cursor-pointer bg-primary-100 hover:bg-primary-200 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 rounded-xl p-3 text-primary-600 dark:text-primary-400 transition-all"
-                    >
-                      <span>
-                        <ImageIcon className="w-5 h-5" />
-                      </span>
-                    </Button>
+                  <label 
+                    htmlFor="image-upload"
+                    className='cursor-pointer'
+                  >
+                    <ImageIcon className="w-5 h-5" />
                   </label>
                 </div>
 

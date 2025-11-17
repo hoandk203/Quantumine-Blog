@@ -56,3 +56,13 @@ export async function resetPassword(token: string) {
     return null;
   }
 }
+
+export const loginGoogleCode = async (code: string) => {
+  try {
+    const res = await instanceApi.post('/auth/google/code', { code });
+    return res.data;
+  } catch (error) {
+    console.error('Google login error:', error);
+    throw error;
+  }
+}

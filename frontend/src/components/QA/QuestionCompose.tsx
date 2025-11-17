@@ -17,21 +17,12 @@ interface QuestionComposeProps {
 
 const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSuccess }) => {
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form states
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [imageUrl, setImageUrl] = useState('');
-  const [linkUrl, setLinkUrl] = useState('');
-  const [linkText, setLinkText] = useState('');
-  const [showLinkForm, setShowLinkForm] = useState(false);
-  const [showImageForm, setShowImageForm] = useState(false);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   if (!isOpen) return null;
 
@@ -57,9 +48,6 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
       setTitle('');
       setContent('');
       setAttachments([]);
-      setImageUrl('');
-      setLinkUrl('');
-      setLinkText('');
       
       onClose();
       onSuccess?.();
@@ -71,60 +59,13 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
-  };
-
   const removeAttachment = (index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
-  const insertText = (text: string) => {
-    if (textareaRef.current) {
-      const start = textareaRef.current.selectionStart;
-      const end = textareaRef.current.selectionEnd;
-      const newContent = content.substring(0, start) + text + content.substring(end);
-      setContent(newContent);
-      
-      // Reset cursor position
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.selectionStart = start + text.length;
-          textareaRef.current.selectionEnd = start + text.length;
-          textareaRef.current.focus();
-        }
-      }, 0);
-    }
-  };
-
-  const insertBold = () => insertText('**văn bản đậm**');
-  const insertItalic = () => insertText('*văn bản nghiêng*');
-  const insertList = () => insertText('\n- Mục 1\n- Mục 2\n- Mục 3');
-  const insertCode = () => insertText('`code`');
-
-  const insertLink = () => {
-    if (linkUrl && linkText) {
-      insertText(`[${linkText}](${linkUrl})`);
-      setLinkUrl('');
-      setLinkText('');
-      setShowLinkForm(false);
-    }
-  };
-
-  const insertImage = () => {
-    if (imageUrl) {
-      insertText(`![Hình ảnh](${imageUrl})`);
-      setImageUrl('');
-      setShowImageForm(false);
-    }
-  };
-
   const modalClasses = `
     fixed z-50 transition-all duration-300 ease-in-out
-    ${isMaximized 
-      ? 'inset-4' 
-      : isMinimized 
+    ${isMinimized 
         ? 'bottom-0 right-4 w-80 h-12' 
         : 'bottom-0 right-4 w-[600px] max-w-[90vw] h-[600px] max-h-[80vh]'
     }
@@ -132,14 +73,6 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
 
   return (
     <>
-      {/* Backdrop */}
-      {isMaximized && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-40"
-          onClick={() => setIsMaximized(false)}
-        />
-      )}
-
       {/* Modal */}
       <div className={modalClasses}>
         <div className="bg-white dark:bg-gray-800 rounded-t-lg border border-gray-200 dark:border-gray-700 shadow-2xl h-full flex flex-col">
@@ -156,14 +89,6 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
                 className="h-8 w-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 <Minimize2 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMaximized(!isMaximized)}
-                className="h-8 w-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                <Maximize2 className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"

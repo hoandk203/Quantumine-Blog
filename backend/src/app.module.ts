@@ -17,6 +17,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { QaModule } from './modules/qa/qa.module';
+import { NewsModule } from './modules/news/news.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { QaModule } from './modules/qa/qa.module';
     TagsModule,
     NotificationsModule,
     QaModule,
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

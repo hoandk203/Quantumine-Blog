@@ -134,7 +134,7 @@ export const formatDatetime = (date: Date | string): string => {
   });
 };
 
-export const generateSEOTitle = (title: string, siteName: string = 'AdvancedBlog'): string => {
+export const generateSEOTitle = (title: string, siteName: string = 'QuantBlog'): string => {
   if (title.length <= 50) {
     return `${title} | ${siteName}`;
   }

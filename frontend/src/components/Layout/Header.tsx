@@ -76,6 +76,7 @@ const Header: React.FC = () => {
     { label: 'Trang chủ', href: '/', active: pathname === '/' },
     { label: 'Bài viết', href: '/posts', active: pathname.startsWith('/posts') },
     { label: 'Cộng đồng', href: '/community', active: pathname === '/community' },
+    { label: 'Tin tức', href: '/news', active: pathname === '/news' },
   ];
 
   return (
@@ -88,10 +89,16 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="font-bold text-xl bg-gradient-to-r from-primary-600 via-secondary-600 to-secondary-700 bg-clip-text text-transparent">
-              <span className="hidden md:block">QuantBlog</span>
-              <span className="md:hidden">QBlog</span>
-            </div>
+            <img
+              src="/LOGO/PNG/text-white-logo-crop.png"
+              alt="QuantBlog"
+              className="w-48 object-contain dark:block hidden"
+            />
+            <img
+              src="/LOGO/PNG/text-purple-logo-crop.png"
+              alt="QuantBlog"
+              className="w-48 object-contain block dark:hidden"
+            />
           </Link>
 
           {/* Desktop Navigation */}

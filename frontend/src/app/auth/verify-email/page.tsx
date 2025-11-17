@@ -27,31 +27,35 @@ export default function VerifyEmailPage() {
       }
 
       if (isVerified) {
-        setStatus('success');
         return;
       }
 
       try {
         const response = await verifyEmail(token);
-        if (response.message) {
+        setStatus('success');
+        setMessage(response.message || 'Email đã được xác thực thành công');
+        setIsVerified(true);
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 3000);
+      } catch (error: any) {
+        console.error('Verify email error:', error);
+        const errorMessage = error.response?.data?.message || error.message;
+
+        // Check if email already verified
+        if (errorMessage?.includes('already exists') || errorMessage?.includes('already verified')) {
           setStatus('success');
-          setMessage(response.message);
+          setMessage('Email đã được xác thực trước đó');
           setIsVerified(true);
           setTimeout(() => {
             router.push('/auth/login');
           }, 3000);
+        } else if (errorMessage?.includes('expired') || errorMessage?.includes('Invalid')) {
+          setStatus('error');
+          setMessage('Token xác thực không hợp lệ hoặc đã hết hạn');
         } else {
           setStatus('error');
-          setMessage('Xác thực email thất bại');
-        }
-      } catch (error: any) {
-        if (error.response?.status === 400 && error.response?.data?.message?.includes('Token already used')) {
-          setStatus('success');
-          setMessage('Email đã được xác thực thành công');
-          setIsVerified(true);
-        } else {
-          setStatus('error');
-          setMessage('Có lỗi xảy ra khi xác thực email');
+          setMessage(errorMessage || 'Có lỗi xảy ra khi xác thực email');
         }
       }
     };
@@ -74,52 +78,45 @@ export default function VerifyEmailPage() {
 
           {status === 'success' && (
             <div className="text-center">
-              <CheckCircle 
+              <CheckCircle
                 className="w-16 h-16 text-green-500 mx-auto mb-4"
               />
               <CardTitle className="text-xl mb-4">
                 Xác thực email thành công!
               </CardTitle>
-              <p className="text-gray-600 mb-6">
-                {message}
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                {message || 'Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay bây giờ.'}
               </p>
-              <Button
-                className="w-full"
-              >
-                <Link href="/auth/login">
+              <Link href="/auth/login" className="block">
+                <Button className="w-full bg-primary-600 hover:bg-primary-700">
                   Đăng nhập ngay
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           )}
 
           {status === 'error' && (
             <div className="text-center">
-              <ErrorIcon 
+              <ErrorIcon
                 className="w-16 h-16 text-red-500 mx-auto mb-4"
               />
               <CardTitle className="text-xl mb-4">
                 Xác thực thất bại
               </CardTitle>
-              <p className="text-red-600 mb-6">
-                {message}
+              <p className="text-red-600 dark:text-red-400 mb-6">
+                {message || 'Có lỗi xảy ra khi xác thực email. Vui lòng thử lại.'}
               </p>
               <div className="space-y-3">
-                <Button
-                  className="w-full"
-                >
-                  <Link href="/auth/login">
+                <Link href="/auth/login" className="block">
+                  <Button className="w-full bg-primary-600 hover:bg-primary-700">
                     Quay lại đăng nhập
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                >
-                  <Link href="/auth/register">
+                  </Button>
+                </Link>
+                <Link href="/auth/register" className="block">
+                  <Button variant="outline" className="w-full">
                     Đăng ký tài khoản mới
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
           )}
