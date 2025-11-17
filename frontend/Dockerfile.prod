@@ -4,9 +4,9 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies based on package-lock
+# Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --production
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
