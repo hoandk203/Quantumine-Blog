@@ -23,14 +23,20 @@ async function bootstrap() {
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   // Enable CORS
-  app.enableCors({
-    origin: [
-      process.env.FRONTEND_URL,
-      'https://quant-blog-ten.vercel.app',
-      'http://localhost:3000',
-    ],
-    credentials: true,
-  });
+  // Note: In production with nginx reverse proxy, CORS is handled by nginx
+  // Only enable CORS in development or when not behind proxy
+  const enableBackendCors = process.env.ENABLE_BACKEND_CORS === 'true' || process.env.NODE_ENV !== 'production';
+
+  if (enableBackendCors) {
+    app.enableCors({
+      origin: [
+        process.env.FRONTEND_URL,
+        'https://quant-blog-ten.vercel.app',
+        'http://localhost:3000',
+      ],
+      credentials: true,
+    });
+  }
 
   // Global validation pipe
   app.useGlobalPipes(
