@@ -16,6 +16,7 @@ import { cn } from "../../lib/utils";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { notificationService } from '../../services/NotificationService';
+import { toast } from 'react-toastify';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -91,7 +92,7 @@ export default function PostComment({ postId }: PostCommentProps) {
   const submitComment = async () => {
     if (!newComment.trim()) return;
     if (!isAuthenticated) {
-      alert('Bạn cần đăng nhập để bình luận');
+      toast.warn('Bạn cần đăng nhập để bình luận');
       return;
     }
 
@@ -134,9 +135,16 @@ export default function PostComment({ postId }: PostCommentProps) {
     } catch (err: any) {
       console.error('Error submitting comment:', err);
       if (err.response?.status === 401) {
-        alert('Bạn cần đăng nhập để bình luận');
+        toast.warn('Bạn cần đăng nhập để bình luận');
       } else {
-        setError('Không thể gửi bình luận');
+        let finalMessage=''
+        const errorMessage = err?.response?.data?.message
+        || err?.message
+        || 'Có lỗi xảy ra khi gửi bình luận';
+        if(errorMessage=== 'Invalid image format. Must be a base64 encoded image (JPEG, PNG, or JPG)'){
+          finalMessage= 'Ảnh phải ở định dạng JPEG, PNG, or JPG'
+        }
+        toast.error(finalMessage);
       }
     } finally {
       setSubmitting(false);
@@ -209,7 +217,7 @@ export default function PostComment({ postId }: PostCommentProps) {
       setError(null);
     } catch (err: any) {
       console.error('Error submitting reply:', err);
-      setError('Không thể gửi trả lời');
+      toast.error('Không thể gửi trả lời');
     } finally {
       setSubmitting(false);
     }

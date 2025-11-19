@@ -8,6 +8,7 @@ import { Textarea } from '../ui/textarea';
 import { createQuestion } from '../../services/QAService';
 import { CreateQuestionDto } from '../../types/qa.types';
 import TiptapEditor from '../Editor/TiptapEditor';
+import { toast } from 'react-toastify';
 
 interface QuestionComposeProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
     e.preventDefault();
     
     if (!title.trim() || !content.trim()) {
-      alert('Vui lòng nhập đầy đủ tiêu đề và nội dung');
+      toast.error('Vui lòng nhập đầy đủ tiêu đề và nội dung');
       return;
     }
 
@@ -51,9 +52,13 @@ const QuestionCompose: React.FC<QuestionComposeProps> = ({ isOpen, onClose, onSu
       
       onClose();
       onSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating question:', error);
-      alert('Có lỗi xảy ra khi tạo câu hỏi. Vui lòng thử lại!');
+      // Extract error message from Axios error response
+      const errorMessage = error?.response?.data?.message
+        || error?.message
+        || 'Có lỗi xảy ra khi đặt câu hỏi';
+      toast.error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
     } finally {
       setIsSubmitting(false);
     }

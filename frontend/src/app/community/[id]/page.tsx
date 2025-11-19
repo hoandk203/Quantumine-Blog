@@ -13,6 +13,7 @@ import { vi } from 'date-fns/locale';
 import { toVietnamTime } from '../../../lib/timezone';
 import AnswerList from "../../../components/QA/AnswerList";
 import {formatDateDayjs, getTimeAgo} from "../../../lib/utils";
+import { toast } from 'react-toastify';
 
 export default function QuestionDetailPage() {
   const params = useParams();
@@ -42,9 +43,12 @@ export default function QuestionDetailPage() {
       setIsSubmittingAnswer(true);
       await createAnswer(questionId, { content });
       await fetchQuestion(); // Refresh to update answer count
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error submitting answer:', error);
-      alert('Có lỗi xảy ra khi gửi câu trả lời');
+      const errorMessage = error?.response?.data?.message
+        || error?.message
+        || 'Có lỗi xảy ra khi đặt câu hỏi';
+      toast.error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
     } finally {
       setIsSubmittingAnswer(false);
     }
