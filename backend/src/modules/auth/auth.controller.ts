@@ -87,16 +87,17 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax' as const,
       path: '/',
+      domain: process.env.COOKIE_DOMAIN || undefined, // .quantumine.com.vn for production
     };
 
     res.cookie('accessToken', result.accessToken, {
       ...cookieOptions,
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('refreshToken', result.refreshToken, {
       ...cookieOptions,
-      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
     // Only return user info (tokens are in httpOnly cookies)
@@ -217,7 +218,8 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return { message: 'Token refreshed successfully' };
@@ -280,11 +282,12 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax' as const,
       path: '/',
+      domain: process.env.COOKIE_DOMAIN || undefined,
     };
 
     res.cookie('accessToken', result.accessToken, {
       ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.cookie('refreshToken', result.refreshToken, {
@@ -328,7 +331,8 @@ export class AuthController {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        domain: process.env.COOKIE_DOMAIN || undefined,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
       res.cookie('refreshToken', result.refreshToken, {
@@ -336,7 +340,8 @@ export class AuthController {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+        domain: process.env.COOKIE_DOMAIN || undefined,
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
       // Redirect to frontend without tokens in URL (tokens are in httpOnly cookies)
