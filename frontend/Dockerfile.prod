@@ -4,9 +4,15 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies with optimizations
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+
+# Use ci with fallback, skip optional deps to save memory
+RUN npm ci --legacy-peer-deps --omit=optional --prefer-offline 2>/dev/null || \
+    npm install --legacy-peer-deps --omit=optional --prefer-offline
+
+# Clean npm cache to reduce layer size
+RUN npm cache clean --force
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -29,8 +35,14 @@ ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ENV NEXT_PUBLIC_COOKIE_DOMAIN=$NEXT_PUBLIC_COOKIE_DOMAIN
 ENV NODE_ENV=production
 
+# Reduce memory usage during build
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 # Build the application
 RUN npm run build
+
+# Clean up build artifacts to save space
+RUN rm -rf node_modules/.cache
 
 # Stage 3: Production runner
 FROM node:20-alpine AS runner
